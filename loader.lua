@@ -1,6 +1,6 @@
 --[[
-  Fpliz Hub - Universal Loader v2.1
-  Com ícone Luna e UI melhorada
+  Fpliz Hub - Universal Loader v2.2
+  Com Blade Ball, logo Luna e UI melhorada
 ]]
 
 -- ==================== SERVIÇOS ====================
@@ -14,7 +14,7 @@ local player = Players.LocalPlayer
 
 -- ==================== CONFIGURAÇÕES ====================
 local HUB_NAME = "Fpliz Hub"
-local HUB_VERSION = "v2.1"
+local HUB_VERSION = "v2.2"
 local HUB_COLOR = Color3.fromRGB(113, 93, 133)
 local HUB_LOGO = "rbxassetid://82795327169782"
 
@@ -48,24 +48,10 @@ local games = {
         icon = HUB_LOGO
     },
     
-    -- Blox Fruits (Sea 1)
-    [2753915549] = {
-        name = "Blox Fruits",
-        script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/blox_fruits.lua",
-        icon = HUB_LOGO
-    },
-    
-    -- Blox Fruits (Sea 2)
-    [4442272183] = {
-        name = "Blox Fruits [Sea 2]",
-        script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/blox_fruits.lua",
-        icon = HUB_LOGO
-    },
-    
-    -- Blox Fruits (Sea 3)
-    [7449423635] = {
-        name = "Blox Fruits [Sea 3]",
-        script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/blox_fruits.lua",
+    -- Blade Ball
+    [13772394625] = {
+        name = "Blade Ball",
+        script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/blade_ball.lua",
         icon = HUB_LOGO
     },
 }
@@ -100,6 +86,7 @@ local function notify(title, content, duration)
     iconImage.BackgroundTransparency = 1
     iconImage.Image = HUB_LOGO
     iconImage.Parent = frame
+    Instance.new("UICorner", iconImage).CornerRadius = UDim.new(0, 8)
     
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, -50, 0, 20)
@@ -167,14 +154,14 @@ local function showLoading(gameName, gameIcon)
     stroke.Color = HUB_COLOR
     stroke.Thickness = 3
     
-    -- Ícone do jogo (Luna Logo)
-    local iconImage = Instance.new("ImageLabel")
-    iconImage.Size = UDim2.new(0, 70, 0, 70)
-    iconImage.Position = UDim2.new(0.5, -35, 0, 20)
-    iconImage.BackgroundTransparency = 1
-    iconImage.Image = gameIcon or HUB_LOGO
-    iconImage.Parent = frame
-    Instance.new("UICorner", iconImage).CornerRadius = UDim.new(0, 15)
+    -- Logo do Luna
+    local logoImage = Instance.new("ImageLabel")
+    logoImage.Size = UDim2.new(0, 70, 0, 70)
+    logoImage.Position = UDim2.new(0.5, -35, 0, 20)
+    logoImage.BackgroundTransparency = 1
+    logoImage.Image = HUB_LOGO
+    logoImage.Parent = frame
+    Instance.new("UICorner", logoImage).CornerRadius = UDim.new(0, 15)
     
     -- Título
     local title = Instance.new("TextLabel")
