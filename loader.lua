@@ -35,48 +35,42 @@ local games = {
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/mm2.lua",
         icon = "🔪",
         version = "1.2",
-        status = "working",
-        updated = "26/08/2026"
+        status = "working"
     },
     [116924926476457] = {
         name = "Murder Mystery V",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/mm2.lua",
         icon = "🔪",
         version = "1.2",
-        status = "working",
-        updated = "26/08/2026"
+        status = "working"
     },
     [3956818381] = {
         name = "Ninja Legends",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/ninja_legends.lua",
         icon = "🥷",
         version = "1.0",
-        status = "working",
-        updated = "25/08/2026"
+        status = "working"
     },
     [286090429] = {
         name = "Arsenal",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/arsenal.lua",
         icon = "🎯",
         version = "1.1",
-        status = "working",
-        updated = "26/08/2026"
+        status = "working"
     },
     [8737899170] = {
         name = "Pet Simulator 99",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/pet_simulator.lua",
         icon = "🐾",
         version = "1.0",
-        status = "working",
-        updated = "25/08/2026"
+        status = "working"
     },
     [6516141723] = {
         name = "Doors",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/doors.lua",
         icon = "🚪",
         version = "1.0",
-        status = "working",
-        updated = "26/08/2026"
+        status = "working"
     },
 }
 
@@ -173,7 +167,7 @@ function UI:FadeIn(object, targetTransparency, targetPosition)
 end
 
 function UI:FadeOut(object, callback)
-    if object:IsA("Frame") then
+    if object:IsA("Frame") or object:IsA("TextButton") then
         TweenService:Create(object, TweenInfo.new(Config.Loading.FadeOut), {BackgroundTransparency = 1}):Play()
     elseif object:IsA("TextLabel") then
         TweenService:Create(object, TweenInfo.new(Config.Loading.FadeOut), {TextTransparency = 1}):Play()
@@ -217,11 +211,31 @@ local function showLoading(gameName, gameIcon)
     table.insert(elements, gameIconLabel)
     
     -- Título
-    local title = UI:CreateLabel(frame, HUB_NAME .. " " .. HUB_VERSION, 30, Color3.fromRGB(255, 255, 255), Enum.Font.GothamBlack, UDim2.new(0, 0, 0, 85))
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 30)
+    title.Position = UDim2.new(0, 0, 0, 85)
+    title.BackgroundTransparency = 1
+    title.Text = HUB_NAME .. " " .. HUB_VERSION
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextSize = 22
+    title.Font = Enum.Font.GothamBlack
+    title.TextTransparency = 1
+    title.BorderSizePixel = 0
+    title.Parent = frame
     table.insert(elements, title)
     
     -- Status
-    local status = UI:CreateLabel(frame, "Initializing...", 25, HUB_COLOR, Enum.Font.Gotham, UDim2.new(0, 0, 0, 120))
+    local status = Instance.new("TextLabel")
+    status.Size = UDim2.new(1, 0, 0, 25)
+    status.Position = UDim2.new(0, 0, 0, 120)
+    status.BackgroundTransparency = 1
+    status.Text = "Initializing..."
+    status.TextColor3 = HUB_COLOR
+    status.TextSize = 14
+    status.Font = Enum.Font.Gotham
+    status.TextTransparency = 1
+    status.BorderSizePixel = 0
+    status.Parent = frame
     table.insert(elements, status)
     
     -- Barra de progresso
@@ -243,7 +257,17 @@ local function showLoading(gameName, gameIcon)
     Instance.new("UICorner", progressFill).CornerRadius = UDim.new(0, 6)
     
     -- Porcentagem
-    local percentLabel = UI:CreateLabel(frame, "0%", 20, Color3.fromRGB(255, 255, 255), Enum.Font.GothamBold, UDim2.new(0, 0, 0, 180))
+    local percentLabel = Instance.new("TextLabel")
+    percentLabel.Size = UDim2.new(1, 0, 0, 20)
+    percentLabel.Position = UDim2.new(0, 0, 0, 180)
+    percentLabel.BackgroundTransparency = 1
+    percentLabel.Text = "0%"
+    percentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    percentLabel.TextSize = 12
+    percentLabel.Font = Enum.Font.GothamBold
+    percentLabel.TextTransparency = 1
+    percentLabel.BorderSizePixel = 0
+    percentLabel.Parent = frame
     table.insert(elements, percentLabel)
     
     -- FADE IN
@@ -258,7 +282,6 @@ local function showLoading(gameName, gameIcon)
     TweenService:Create(status, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
     TweenService:Create(percentLabel, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
     
-    -- Retorna funções de controle
     return {
         Screen = screen,
         Frame = frame,
@@ -304,7 +327,6 @@ local function showError(errorType, gameId, retryCallback, errorDetails)
     Instance.new("UICorner", logo).CornerRadius = UDim.new(0, 15)
     table.insert(elements, logo)
     
-    -- Título baseado no tipo de erro
     local errorTitle = "Unknown Error"
     local errorMessage = "Something went wrong."
     
@@ -322,7 +344,17 @@ local function showError(errorType, gameId, retryCallback, errorDetails)
         end
     end
     
-    local title = UI:CreateLabel(frame, errorTitle, 30, Color3.fromRGB(255, 100, 100), Enum.Font.GothamBlack, UDim2.new(0, 0, 0, 100))
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 30)
+    title.Position = UDim2.new(0, 0, 0, 100)
+    title.BackgroundTransparency = 1
+    title.Text = errorTitle
+    title.TextColor3 = Color3.fromRGB(255, 100, 100)
+    title.TextSize = 22
+    title.Font = Enum.Font.GothamBlack
+    title.TextTransparency = 1
+    title.BorderSizePixel = 0
+    title.Parent = frame
     table.insert(elements, title)
     
     local msg = Instance.new("TextLabel")
@@ -335,10 +367,10 @@ local function showError(errorType, gameId, retryCallback, errorDetails)
     msg.Font = Enum.Font.Gotham
     msg.TextWrapped = true
     msg.TextTransparency = 1
+    msg.BorderSizePixel = 0
     msg.Parent = frame
     table.insert(elements, msg)
     
-    -- Botões
     if retryCallback then
         local retryBtn = UI:CreateButton(frame, "RETRY", UDim2.new(0, 30, 0, 195), function()
             screen:Destroy()
@@ -358,7 +390,6 @@ local function showError(errorType, gameId, retryCallback, errorDetails)
     end)
     table.insert(elements, closeBtn)
     
-    -- FADE IN
     UI:FadeIn(bg, 0.6)
     UI:FadeIn(frame, 0, UDim2.new(0.5, -190, 0.5, -125))
     
@@ -377,7 +408,6 @@ local function loadScript(gameConfig)
     local loading = showLoading(gameConfig.name, gameConfig.icon)
     
     local function attemptLoad()
-        -- Fase 1: Inicializando
         loading.SetStatus("Initializing...")
         loading.SetProgress(10)
         task.wait(0.3)
@@ -386,7 +416,6 @@ local function loadScript(gameConfig)
         loading.SetProgress(20)
         task.wait(0.2)
         
-        -- Fase 2: Baixando
         loading.SetStatus("Downloading " .. gameConfig.name .. "...")
         loading.SetProgress(30)
         
@@ -408,7 +437,6 @@ local function loadScript(gameConfig)
         loading.SetProgress(50)
         task.wait(0.2)
         
-        -- Fase 3: Executando
         loading.SetStatus("Loading module...")
         loading.SetProgress(60)
         
@@ -417,7 +445,6 @@ local function loadScript(gameConfig)
         end)
         
         if loadSuccess then
-            -- SUCESSO
             loading.SetStatus("Initializing UI...")
             loading.SetProgress(80)
             task.wait(0.3)
@@ -433,7 +460,6 @@ local function loadScript(gameConfig)
             loading.Destroy()
             return true
         else
-            -- ERRO (usa loadResult para detalhes)
             loading.SetStatus("Execution failed")
             loading.SetProgress(60)
             task.wait(0.5)
