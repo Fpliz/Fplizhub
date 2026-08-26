@@ -1,6 +1,6 @@
 --[[
-  Fpliz Hub - Universal Loader v2.2
-  Com Blade Ball, logo Luna e UI melhorada
+  Fpliz Hub - Universal Loader v3.0
+  Com Intro Personalizada, Fade In/Out e Arsenal
 ]]
 
 -- ==================== SERVIÇOS ====================
@@ -14,7 +14,7 @@ local player = Players.LocalPlayer
 
 -- ==================== CONFIGURAÇÕES ====================
 local HUB_NAME = "Fpliz Hub"
-local HUB_VERSION = "v2.2"
+local HUB_VERSION = "v3.0"
 local HUB_COLOR = Color3.fromRGB(113, 93, 133)
 local HUB_LOGO = "rbxassetid://82795327169782"
 
@@ -48,15 +48,111 @@ local games = {
         icon = HUB_LOGO
     },
     
-    -- Blade Ball
-    [13772394625] = {
-        name = "Blade Ball",
-        script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/blade_ball.lua",
+    -- Arsenal
+    [286090429] = {
+        name = "Arsenal",
+        script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/arsenal.lua",
         icon = HUB_LOGO
     },
 }
 
--- ==================== FUNÇÃO DE NOTIFICAÇÃO ====================
+-- ==================== INTRO PERSONALIZADA ====================
+local function showIntro()
+    local screen = Instance.new("ScreenGui")
+    screen.Name = "FplizIntro"
+    screen.ResetOnSpawn = false
+    screen.IgnoreGuiInset = true
+    screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    screen.DisplayOrder = 999
+    screen.Parent = CoreGui
+    
+    -- Fundo
+    local bg = Instance.new("Frame")
+    bg.Size = UDim2.new(1, 0, 1, 0)
+    bg.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+    bg.BackgroundTransparency = 1
+    bg.Parent = screen
+    
+    -- Gradiente
+    local gradient = Instance.new("UIGradient", bg)
+    gradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 15, 25)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 30, 50))
+    })
+    gradient.Rotation = 45
+    
+    -- Logo
+    local logo = Instance.new("ImageLabel")
+    logo.Size = UDim2.new(0, 150, 0, 150)
+    logo.Position = UDim2.new(0.5, -75, 0.4, -75)
+    logo.BackgroundTransparency = 1
+    logo.Image = HUB_LOGO
+    logo.ImageTransparency = 1
+    logo.Parent = screen
+    Instance.new("UICorner", logo).CornerRadius = UDim.new(0, 25)
+    
+    -- Título
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 50)
+    title.Position = UDim2.new(0, 0, 0.5, 30)
+    title.BackgroundTransparency = 1
+    title.Text = HUB_NAME
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextSize = 45
+    title.Font = Enum.Font.GothamBlack
+    title.TextTransparency = 1
+    title.Parent = screen
+    
+    -- Versão
+    local version = Instance.new("TextLabel")
+    version.Size = UDim2.new(1, 0, 0, 25)
+    version.Position = UDim2.new(0, 0, 0.5, 85)
+    version.BackgroundTransparency = 1
+    version.Text = HUB_VERSION
+    version.TextColor3 = HUB_COLOR
+    version.TextSize = 18
+    version.Font = Enum.Font.GothamBold
+    version.TextTransparency = 1
+    version.Parent = screen
+    
+    -- Loading bar
+    local loadBg = Instance.new("Frame")
+    loadBg.Size = UDim2.new(0, 300, 0, 8)
+    loadBg.Position = UDim2.new(0.5, -150, 0.6, 0)
+    loadBg.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    loadBg.Parent = screen
+    Instance.new("UICorner", loadBg).CornerRadius = UDim.new(0, 4)
+    
+    local loadFill = Instance.new("Frame")
+    loadFill.Size = UDim2.new(0, 0, 1, 0)
+    loadFill.BackgroundColor3 = HUB_COLOR
+    loadFill.Parent = loadBg
+    Instance.new("UICorner", loadFill).CornerRadius = UDim.new(0, 4)
+    
+    -- FADE IN
+    TweenService:Create(bg, TweenInfo.new(0.8), {BackgroundTransparency = 0}):Play()
+    TweenService:Create(logo, TweenInfo.new(0.8, Enum.EasingStyle.Back), {ImageTransparency = 0}):Play()
+    TweenService:Create(title, TweenInfo.new(0.8), {TextTransparency = 0}):Play()
+    TweenService:Create(version, TweenInfo.new(0.8), {TextTransparency = 0}):Play()
+    
+    -- Animação da barra
+    TweenService:Create(loadFill, TweenInfo.new(2.5, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 1, 0)}):Play()
+    
+    -- Espera
+    task.wait(3)
+    
+    -- FADE OUT
+    TweenService:Create(bg, TweenInfo.new(0.6), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(logo, TweenInfo.new(0.6), {ImageTransparency = 1}):Play()
+    TweenService:Create(title, TweenInfo.new(0.6), {TextTransparency = 1}):Play()
+    TweenService:Create(version, TweenInfo.new(0.6), {TextTransparency = 1}):Play()
+    TweenService:Create(loadBg, TweenInfo.new(0.6), {BackgroundTransparency = 1}):Play()
+    
+    task.wait(0.6)
+    screen:Destroy()
+end
+
+-- ==================== FUNÇÃO DE NOTIFICAÇÃO MELHORADA ====================
 local function notify(title, content, duration)
     duration = duration or 3
     
@@ -68,29 +164,31 @@ local function notify(title, content, duration)
     screen.Parent = CoreGui
     
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 300, 0, 80)
-    frame.Position = UDim2.new(1, -320, 0, 20)
-    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+    frame.Size = UDim2.new(0, 320, 0, 85)
+    frame.Position = UDim2.new(1, -340, 0, 20)
+    frame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
     frame.BorderSizePixel = 0
     frame.ClipsDescendants = true
+    frame.BackgroundTransparency = 1
     frame.Parent = screen
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
     
     local stroke = Instance.new("UIStroke", frame)
     stroke.Color = HUB_COLOR
     stroke.Thickness = 2
+    stroke.Transparency = 0.3
     
     local iconImage = Instance.new("ImageLabel")
-    iconImage.Size = UDim2.new(0, 30, 0, 30)
-    iconImage.Position = UDim2.new(0, 10, 0, 10)
+    iconImage.Size = UDim2.new(0, 35, 0, 35)
+    iconImage.Position = UDim2.new(0, 12, 0, 12)
     iconImage.BackgroundTransparency = 1
     iconImage.Image = HUB_LOGO
     iconImage.Parent = frame
-    Instance.new("UICorner", iconImage).CornerRadius = UDim.new(0, 8)
+    Instance.new("UICorner", iconImage).CornerRadius = UDim.new(0, 10)
     
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -50, 0, 20)
-    titleLabel.Position = UDim2.new(0, 50, 0, 5)
+    titleLabel.Size = UDim2.new(1, -60, 0, 20)
+    titleLabel.Position = UDim2.new(0, 55, 0, 8)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = title
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -100,8 +198,8 @@ local function notify(title, content, duration)
     titleLabel.Parent = frame
     
     local contentLabel = Instance.new("TextLabel")
-    contentLabel.Size = UDim2.new(1, -50, 0, 40)
-    contentLabel.Position = UDim2.new(0, 50, 0, 30)
+    contentLabel.Size = UDim2.new(1, -60, 0, 40)
+    contentLabel.Position = UDim2.new(0, 55, 0, 32)
     contentLabel.BackgroundTransparency = 1
     contentLabel.Text = content
     contentLabel.TextColor3 = Color3.fromRGB(180, 180, 190)
@@ -111,16 +209,32 @@ local function notify(title, content, duration)
     contentLabel.TextWrapped = true
     contentLabel.Parent = frame
     
-    -- Animação de entrada
-    frame.Position = UDim2.new(1, 20, 0, 20)
-    local tweenIn = TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Position = UDim2.new(1, -320, 0, 20)})
-    tweenIn:Play()
+    -- Barra de tempo
+    local timeBar = Instance.new("Frame")
+    timeBar.Size = UDim2.new(1, 0, 0, 3)
+    timeBar.Position = UDim2.new(0, 0, 1, -3)
+    timeBar.BackgroundColor3 = HUB_COLOR
+    timeBar.Parent = frame
     
-    -- Animação de saída
+    -- FADE IN
+    frame.Position = UDim2.new(1, 20, 0, 20)
+    TweenService:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
+        Position = UDim2.new(1, -340, 0, 20),
+        BackgroundTransparency = 0
+    }):Play()
+    
+    -- Barra de tempo
+    TweenService:Create(timeBar, TweenInfo.new(duration, Enum.EasingStyle.Linear), {
+        Size = UDim2.new(0, 0, 0, 3)
+    }):Play()
+    
+    -- FADE OUT
     task.delay(duration, function()
-        local tweenOut = TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Position = UDim2.new(1, 20, 0, 20)})
-        tweenOut:Play()
-        tweenOut.Completed:Wait()
+        TweenService:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
+            Position = UDim2.new(1, 20, 0, 20),
+            BackgroundTransparency = 1
+        }):Play()
+        task.wait(0.4)
         screen:Destroy()
     end)
 end
@@ -134,39 +248,37 @@ local function showLoading(gameName, gameIcon)
     screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screen.Parent = CoreGui
     
-    -- Fundo escuro
     local background = Instance.new("Frame")
     background.Size = UDim2.new(1, 0, 1, 0)
     background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    background.BackgroundTransparency = 0.5
+    background.BackgroundTransparency = 1
     background.Parent = screen
     
-    -- Frame central
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 400, 0, 220)
-    frame.Position = UDim2.new(0.5, -200, 0.5, -110)
-    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+    frame.Size = UDim2.new(0, 400, 0, 230)
+    frame.Position = UDim2.new(0.5, -200, 0.4, -115)
+    frame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
     frame.BorderSizePixel = 0
+    frame.BackgroundTransparency = 1
     frame.Parent = screen
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 15)
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 20)
     
     local stroke = Instance.new("UIStroke", frame)
     stroke.Color = HUB_COLOR
     stroke.Thickness = 3
+    stroke.Transparency = 0.3
     
-    -- Logo do Luna
     local logoImage = Instance.new("ImageLabel")
     logoImage.Size = UDim2.new(0, 70, 0, 70)
-    logoImage.Position = UDim2.new(0.5, -35, 0, 20)
+    logoImage.Position = UDim2.new(0.5, -35, 0, 25)
     logoImage.BackgroundTransparency = 1
     logoImage.Image = HUB_LOGO
     logoImage.Parent = frame
-    Instance.new("UICorner", logoImage).CornerRadius = UDim.new(0, 15)
+    Instance.new("UICorner", logoImage).CornerRadius = UDim.new(0, 20)
     
-    -- Título
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 30)
-    title.Position = UDim2.new(0, 0, 0, 100)
+    title.Position = UDim2.new(0, 0, 0, 105)
     title.BackgroundTransparency = 1
     title.Text = HUB_NAME .. " " .. HUB_VERSION
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -174,10 +286,9 @@ local function showLoading(gameName, gameIcon)
     title.Font = Enum.Font.GothamBold
     title.Parent = frame
     
-    -- Status
     local status = Instance.new("TextLabel")
     status.Size = UDim2.new(1, 0, 0, 30)
-    status.Position = UDim2.new(0, 0, 0, 140)
+    status.Position = UDim2.new(0, 0, 0, 145)
     status.BackgroundTransparency = 1
     status.Text = "Carregando " .. gameName .. "..."
     status.TextColor3 = HUB_COLOR
@@ -185,34 +296,53 @@ local function showLoading(gameName, gameIcon)
     status.Font = Enum.Font.Gotham
     status.Parent = frame
     
-    -- Barra de progresso
     local progressBg = Instance.new("Frame")
-    progressBg.Size = UDim2.new(1, -80, 0, 10)
-    progressBg.Position = UDim2.new(0, 40, 0, 180)
+    progressBg.Size = UDim2.new(1, -80, 0, 12)
+    progressBg.Position = UDim2.new(0, 40, 0, 185)
     progressBg.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
     progressBg.Parent = frame
-    Instance.new("UICorner", progressBg).CornerRadius = UDim.new(0, 5)
+    Instance.new("UICorner", progressBg).CornerRadius = UDim.new(0, 6)
     
     local progressFill = Instance.new("Frame")
     progressFill.Size = UDim2.new(0, 0, 1, 0)
     progressFill.BackgroundColor3 = HUB_COLOR
     progressFill.Parent = progressBg
-    Instance.new("UICorner", progressFill).CornerRadius = UDim.new(0, 5)
+    Instance.new("UICorner", progressFill).CornerRadius = UDim.new(0, 6)
     
-    -- Animação de loading
+    -- FADE IN
+    TweenService:Create(background, TweenInfo.new(0.5), {BackgroundTransparency = 0.6}):Play()
+    TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {
+        Position = UDim2.new(0.5, -200, 0.5, -115),
+        BackgroundTransparency = 0
+    }):Play()
+    
     task.spawn(function()
         local progress = 0
-        while progress < 1 do
-            progress = math.min(progress + 0.02, 0.9)
+        while progress < 0.9 do
+            progress = progress + 0.02
             progressFill.Size = UDim2.new(progress, 0, 1, 0)
-            task.wait(0.05)
+            task.wait(0.03)
         end
     end)
     
     return screen, progressFill
 end
 
--- ==================== FUNÇÃO DE JOGO NÃO SUPORTADO ====================
+-- ==================== FADE OUT DO LOADING ====================
+local function fadeOutLoading(screen, progressFill)
+    progressFill.Size = UDim2.new(1, 0, 1, 0)
+    task.wait(0.2)
+    
+    local frame = screen:FindFirstChildOfClass("Frame")
+    if frame then
+        TweenService:Create(frame, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
+    end
+    
+    task.wait(0.4)
+    screen:Destroy()
+end
+
+-- ==================== JOGO NÃO SUPORTADO ====================
 local function showUnsupported(gameId)
     local screen = Instance.new("ScreenGui")
     screen.Name = "FplizUnsupported"
@@ -221,19 +351,18 @@ local function showUnsupported(gameId)
     screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screen.Parent = CoreGui
     
-    -- Fundo
     local background = Instance.new("Frame")
     background.Size = UDim2.new(1, 0, 1, 0)
     background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    background.BackgroundTransparency = 0.6
+    background.BackgroundTransparency = 1
     background.Parent = screen
     
-    -- Frame central
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(0, 420, 0, 280)
-    frame.Position = UDim2.new(0.5, -210, 0.5, -140)
-    frame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    frame.Position = UDim2.new(0.5, -210, 0.4, -140)
+    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
     frame.BorderSizePixel = 0
+    frame.BackgroundTransparency = 1
     frame.Parent = screen
     Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 20)
     
@@ -241,7 +370,6 @@ local function showUnsupported(gameId)
     stroke.Color = HUB_COLOR
     stroke.Thickness = 3
     
-    -- Logo
     local logo = Instance.new("ImageLabel")
     logo.Size = UDim2.new(0, 80, 0, 80)
     logo.Position = UDim2.new(0.5, -40, 0, 20)
@@ -250,7 +378,6 @@ local function showUnsupported(gameId)
     logo.Parent = frame
     Instance.new("UICorner", logo).CornerRadius = UDim.new(0, 15)
     
-    -- Título
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 35)
     title.Position = UDim2.new(0, 0, 0, 110)
@@ -261,7 +388,6 @@ local function showUnsupported(gameId)
     title.Font = Enum.Font.GothamBlack
     title.Parent = frame
     
-    -- Versão
     local version = Instance.new("TextLabel")
     version.Size = UDim2.new(1, 0, 0, 20)
     version.Position = UDim2.new(0, 0, 0, 145)
@@ -272,7 +398,6 @@ local function showUnsupported(gameId)
     version.Font = Enum.Font.GothamBold
     version.Parent = frame
     
-    -- Mensagem
     local msg = Instance.new("TextLabel")
     msg.Size = UDim2.new(1, -60, 0, 50)
     msg.Position = UDim2.new(0, 30, 0, 175)
@@ -284,7 +409,6 @@ local function showUnsupported(gameId)
     msg.TextWrapped = true
     msg.Parent = frame
     
-    -- Botão copiar ID
     local copyBtn = Instance.new("TextButton")
     copyBtn.Size = UDim2.new(0, 140, 0, 40)
     copyBtn.Position = UDim2.new(0, 30, 0, 230)
@@ -297,14 +421,6 @@ local function showUnsupported(gameId)
     copyBtn.Parent = frame
     Instance.new("UICorner", copyBtn).CornerRadius = UDim.new(0, 10)
     
-    copyBtn.MouseEnter:Connect(function()
-        TweenService:Create(copyBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(60, 60, 70)}):Play()
-    end)
-    
-    copyBtn.MouseLeave:Connect(function()
-        TweenService:Create(copyBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 40, 50)}):Play()
-    end)
-    
     copyBtn.MouseButton1Click:Connect(function()
         pcall(function()
             setclipboard(tostring(gameId))
@@ -312,7 +428,6 @@ local function showUnsupported(gameId)
         end)
     end)
     
-    -- Botão fechar
     local closeBtn = Instance.new("TextButton")
     closeBtn.Size = UDim2.new(0, 140, 0, 40)
     closeBtn.Position = UDim2.new(1, -170, 0, 230)
@@ -325,17 +440,19 @@ local function showUnsupported(gameId)
     closeBtn.Parent = frame
     Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 10)
     
-    closeBtn.MouseEnter:Connect(function()
-        TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(150, 120, 180)}):Play()
-    end)
-    
-    closeBtn.MouseLeave:Connect(function()
-        TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundColor3 = HUB_COLOR}):Play()
-    end)
-    
     closeBtn.MouseButton1Click:Connect(function()
+        TweenService:Create(background, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+        TweenService:Create(frame, TweenInfo.new(0.3), {BackgroundTransparency = 1, Position = UDim2.new(0.5, -210, 0.6, -140)}):Play()
+        task.wait(0.3)
         screen:Destroy()
     end)
+    
+    -- FADE IN
+    TweenService:Create(background, TweenInfo.new(0.5), {BackgroundTransparency = 0.6}):Play()
+    TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {
+        Position = UDim2.new(0.5, -210, 0.5, -140),
+        BackgroundTransparency = 0
+    }):Play()
 end
 
 -- ==================== FUNÇÃO DE CARREGAMENTO ====================
@@ -347,19 +464,19 @@ local function loadScript(url, gameName, gameIcon)
     end)
     
     if not success then
-        loadingScreen:Destroy()
+        fadeOutLoading(loadingScreen, progressFill)
         notify("Erro", "Falha ao baixar script!", 3)
         return false
     end
     
     progressFill.Size = UDim2.new(1, 0, 1, 0)
-    task.wait(0.3)
+    task.wait(0.2)
     
     local loadSuccess, loadResult = pcall(function()
         loadstring(result)()
     end)
     
-    loadingScreen:Destroy()
+    fadeOutLoading(loadingScreen, progressFill)
     
     if not loadSuccess then
         notify("Erro", "Falha ao executar: " .. tostring(loadResult), 3)
@@ -370,24 +487,23 @@ local function loadScript(url, gameName, gameIcon)
 end
 
 -- ==================== EXECUÇÃO PRINCIPAL ====================
+-- Mostra intro primeiro
+showIntro()
+
 local gameId = game.PlaceId
 local gameConfig = games[gameId]
 
 if gameConfig then
-    -- Notificação de boas-vindas
     notify(HUB_NAME, "Bem-vindo! Carregando " .. gameConfig.name .. "...", 2)
     
-    -- Carrega o script
     local success = loadScript(gameConfig.script, gameConfig.name, gameConfig.icon)
     
     if success then
         notify("Sucesso", gameConfig.name .. " carregado!", 3)
     end
 else
-    -- Jogo não suportado
     showUnsupported(gameId)
     
-    -- Log no console
     warn("[" .. HUB_NAME .. "] Jogo não suportado: " .. gameId)
     print("[" .. HUB_NAME .. "] Adicione no loader:")
     print("[" .. gameId .. "] = {")
