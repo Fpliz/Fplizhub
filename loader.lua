@@ -1,6 +1,6 @@
 --[[
-  Fpliz Hub - Universal Loader v4.1
-  Library: Flux (UI) + Own Loading/Notifications
+  Fpliz Hub - Universal Loader v4.2
+  Sem Auto-Update
 ]]
 
 -- ==================== SERVICES ====================
@@ -12,13 +12,8 @@ local player = Players.LocalPlayer
 
 -- ==================== CONFIGURATION ====================
 local HUB_NAME = "Fpliz Hub"
-local HUB_VERSION = "v4.1"
+local HUB_VERSION = "v4.2"
 local HUB_LOGO = "rbxassetid://82795327169782"
-
--- Auto-Update
-local CURRENT_VERSION = "4.1"
-local LOADER_URL = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/loader.lua"
-local VERSION_URL = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/version.txt"
 
 -- ==================== GAMES LIST ====================
 local games = {
@@ -48,67 +43,12 @@ local games = {
     },
 }
 
--- ==================== AUTO-UPDATE ====================
-local function checkForUpdates()
-    pcall(function()
-        local latestVersion = game:HttpGet(VERSION_URL)
-        latestVersion = latestVersion:gsub("%s+", "")
-        
-        if latestVersion ~= CURRENT_VERSION then
-            -- Update found
-            local screen = Instance.new("ScreenGui")
-            screen.Name = "FplizUpdate"
-            screen.ResetOnSpawn = false
-            screen.Parent = CoreGui
-            
-            local bg = Instance.new("Frame")
-            bg.Size = UDim2.new(1, 0, 1, 0)
-            bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-            bg.BackgroundTransparency = 0.7
-            bg.Parent = screen
-            
-            local frame = Instance.new("Frame")
-            frame.Size = UDim2.new(0, 300, 0, 120)
-            frame.Position = UDim2.new(0.5, -150, 0.5, -60)
-            frame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-            frame.BorderSizePixel = 0
-            frame.Parent = screen
-            Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-            
-            local title = Instance.new("TextLabel")
-            title.Size = UDim2.new(1, 0, 0, 30)
-            title.Position = UDim2.new(0, 0, 0, 15)
-            title.BackgroundTransparency = 1
-            title.Text = "UPDATE FOUND!"
-            title.TextColor3 = Color3.fromRGB(255, 255, 255)
-            title.TextSize = 18
-            title.Font = Enum.Font.GothamBold
-            title.Parent = frame
-            
-            local msg = Instance.new("TextLabel")
-            msg.Size = UDim2.new(1, 0, 0, 30)
-            msg.Position = UDim2.new(0, 0, 0, 50)
-            msg.BackgroundTransparency = 1
-            msg.Text = "Reloading script..."
-            msg.TextColor3 = Color3.fromRGB(180, 180, 190)
-            msg.TextSize = 13
-            msg.Font = Enum.Font.Gotham
-            msg.Parent = frame
-            
-            task.wait(2)
-            local newLoader = game:HttpGet(LOADER_URL)
-            loadstring(newLoader)()
-            return true
-        end
-    end)
-    return false
-end
-
 -- ==================== LOADING SCREEN ====================
 local function showLoading(gameName)
     local screen = Instance.new("ScreenGui")
     screen.Name = "FplizLoading"
     screen.ResetOnSpawn = false
+    screen.IgnoreGuiInset = true
     screen.Parent = CoreGui
     
     local bg = Instance.new("Frame")
@@ -199,6 +139,7 @@ local function showUnsupported(gameId)
     local screen = Instance.new("ScreenGui")
     screen.Name = "FplizUnsupported"
     screen.ResetOnSpawn = false
+    screen.IgnoreGuiInset = true
     screen.Parent = CoreGui
     
     local bg = Instance.new("Frame")
@@ -285,113 +226,18 @@ local function loadScript(url, gameName)
     return true
 end
 
--- ==================== FLUX UI ====================
-local success, Flux = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/depthso/Flux/main/Flux.lua"))()
-end)
-
-if success and Flux then
-    local Window = Flux:CreateWindow({
-        Title = HUB_NAME,
-        Subtitle = HUB_VERSION,
-        TabWidth = 120,
-        Size = UDim2.fromOffset(550, 400),
-        Acrylic = true,
-        Theme = "Dark",
-        ImMutable = true
-    })
-    
-    local MainTab = Window:CreateTab({
-        Title = "Home",
-        Icon = "home"
-    })
-    
-    local GamesTab = Window:CreateTab({
-        Title = "Games",
-        Icon = "gamepad-2"
-    })
-    
-    local SettingsTab = Window:CreateTab({
-        Title = "Settings",
-        Icon = "settings"
-    })
-    
-    -- Home Tab
-    MainTab:CreateSection("Welcome")
-    MainTab:CreateLabel({
-        Title = "Welcome to " .. HUB_NAME,
-        Subtitle = "Universal hub for Roblox"
-    })
-    
-    MainTab:CreateLabel({
-        Title = "Current Game",
-        Subtitle = (games[game.PlaceId] and games[game.PlaceId].name or "Not supported") .. " | ID: " .. game.PlaceId
-    })
-    
-    MainTab:CreateSection("Actions")
-    local loadButton = MainTab:CreateButton({
-        Title = "Load Script",
-        Description = "Loads the game script",
-        Callback = function()
-            local gameConfig = games[game.PlaceId]
-            if gameConfig then
-                loadScript(gameConfig.script, gameConfig.name)
-            else
-                Flux:Notification("Game not supported!", "Error", 3)
-            end
-        end
-    })
-    
-    -- Games Tab
-    GamesTab:CreateSection("Supported Games")
-    for id, config in pairs(games) do
-        GamesTab:CreateLabel({
-            Title = config.name,
-            Subtitle = "ID: " .. id
-        })
-    end
-    
-    -- Settings Tab
-    SettingsTab:CreateSection("Auto Load")
-    local autoLoadToggle = SettingsTab:CreateToggle({
-        Title = "Auto Load",
-        Description = "Automatically loads script",
-        Default = true,
-        Callback = function(v)
-            autoLoadEnabled = v
-        end
-    })
-    
-    SettingsTab:CreateSection("Info")
-    SettingsTab:CreateLabel({
-        Title = HUB_NAME,
-        Subtitle = HUB_VERSION
-    })
-else
-    warn("[Fpliz Hub] Flux failed to load, using fallback UI")
-end
-
 -- ==================== MAIN ====================
--- Check updates
-local hasUpdate = checkForUpdates()
-if hasUpdate then return end
+local gameId = game.PlaceId
+local gameConfig = games[gameId]
 
--- Auto-load if enabled
-local autoLoadEnabled = true
-
-if autoLoadEnabled then
-    local gameId = game.PlaceId
-    local gameConfig = games[gameId]
-    
-    if gameConfig then
-        loadScript(gameConfig.script, gameConfig.name)
-    else
-        showUnsupported(gameId)
-        warn("[Fpliz Hub] Game not supported: " .. gameId)
-    end
+if gameConfig then
+    loadScript(gameConfig.script, gameConfig.name)
+else
+    showUnsupported(gameId)
+    warn("[Fpliz Hub] Game not supported: " .. gameId)
 end
 
--- Anti-AFK
+-- ==================== ANTI-AFK ====================
 task.spawn(function()
     while true do
         task.wait(180)
