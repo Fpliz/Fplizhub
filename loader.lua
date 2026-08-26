@@ -1,24 +1,23 @@
 --[[
   Fpliz Hub - Universal Loader v3.2
-  Intro corrigida sem crash
+  English Version
 ]]
 
--- ==================== SERVIÇOS ====================
+-- ==================== SERVICES ====================
 local Players = game:GetService("Players")
-local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 
 local player = Players.LocalPlayer
 
--- ==================== CONFIGURAÇÕES ====================
+-- ==================== CONFIGURATION ====================
 local HUB_NAME = "Fpliz Hub"
 local HUB_VERSION = "v3.2"
 local HUB_COLOR = Color3.fromRGB(113, 93, 133)
 local HUB_LOGO = "rbxassetid://82795327169782"
 
--- ==================== LISTA DE JOGOS ====================
+-- ==================== GAMES LIST ====================
 local games = {
     [142823291] = {
         name = "Murder Mystery 2",
@@ -42,7 +41,7 @@ local games = {
     },
 }
 
--- ==================== INTRO CORRIGIDA ====================
+-- ==================== INTRO ====================
 local function showIntro()
     pcall(function()
         local screen = Instance.new("ScreenGui")
@@ -53,13 +52,13 @@ local function showIntro()
         screen.DisplayOrder = 999
         screen.Parent = CoreGui
         
-        -- Fundo
+        -- Background
         local bg = Instance.new("Frame")
         bg.Size = UDim2.new(1, 0, 1, 0)
         bg.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
         bg.Parent = screen
         
-        -- Gradiente
+        -- Gradient
         local gradient = Instance.new("UIGradient", bg)
         gradient.Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 15, 25)),
@@ -74,7 +73,7 @@ local function showIntro()
         container.BackgroundTransparency = 1
         container.Parent = screen
         
-        -- Logo (SEM ScaleType.Fit para evitar crash)
+        -- Logo
         local logo = Instance.new("ImageLabel")
         logo.Size = UDim2.new(0, 100, 0, 100)
         logo.Position = UDim2.new(0.5, -50, 0, 0)
@@ -83,7 +82,7 @@ local function showIntro()
         logo.Parent = container
         Instance.new("UICorner", logo).CornerRadius = UDim.new(0, 15)
         
-        -- Título Fpliz
+        -- Title Fpliz
         local titleFpliz = Instance.new("TextLabel")
         titleFpliz.Size = UDim2.new(1, 0, 0, 40)
         titleFpliz.Position = UDim2.new(0, 0, 0, 110)
@@ -94,7 +93,7 @@ local function showIntro()
         titleFpliz.Font = Enum.Font.GothamBlack
         titleFpliz.Parent = container
         
-        -- Título Hub
+        -- Title Hub
         local titleHub = Instance.new("TextLabel")
         titleHub.Size = UDim2.new(1, 0, 0, 40)
         titleHub.Position = UDim2.new(0, 0, 0, 150)
@@ -105,7 +104,7 @@ local function showIntro()
         titleHub.Font = Enum.Font.GothamBlack
         titleHub.Parent = container
         
-        -- Versão
+        -- Version
         local version = Instance.new("TextLabel")
         version.Size = UDim2.new(1, 0, 0, 20)
         version.Position = UDim2.new(0, 0, 0, 195)
@@ -130,7 +129,7 @@ local function showIntro()
         loadFill.Parent = loadBg
         Instance.new("UICorner", loadFill).CornerRadius = UDim.new(0, 3)
         
-        -- Animação da barra (simples, sem crash)
+        -- Loading bar animation
         task.spawn(function()
             for i = 1, 100 do
                 loadFill.Size = UDim2.new(i / 100, 0, 1, 0)
@@ -138,15 +137,15 @@ local function showIntro()
             end
         end)
         
-        -- Espera
+        -- Wait
         task.wait(3)
         
-        -- Fade out
+        -- Destroy
         screen:Destroy()
     end)
 end
 
--- ==================== NOTIFICAÇÃO ====================
+-- ==================== NOTIFICATION ====================
 local function notify(title, content, duration)
     duration = duration or 3
     
@@ -207,7 +206,7 @@ local function notify(title, content, duration)
     end)
 end
 
--- ==================== LOADING SIMPLES ====================
+-- ==================== LOADING ====================
 local function showLoading(gameName)
     local screen = Instance.new("ScreenGui")
     screen.Name = "FplizLoading"
@@ -255,7 +254,7 @@ local function showLoading(gameName)
     status.Size = UDim2.new(1, 0, 0, 25)
     status.Position = UDim2.new(0, 0, 0, 100)
     status.BackgroundTransparency = 1
-    status.Text = "Carregando " .. gameName .. "..."
+    status.Text = "Loading " .. gameName .. "..."
     status.TextColor3 = HUB_COLOR
     status.TextSize = 13
     status.Font = Enum.Font.Gotham
@@ -264,7 +263,7 @@ local function showLoading(gameName)
     return screen
 end
 
--- ==================== JOGO NÃO SUPORTADO ====================
+-- ==================== UNSUPPORTED GAME ====================
 local function showUnsupported(gameId)
     local screen = Instance.new("ScreenGui")
     screen.Name = "FplizUnsupported"
@@ -312,7 +311,7 @@ local function showUnsupported(gameId)
     msg.Size = UDim2.new(1, -40, 0, 50)
     msg.Position = UDim2.new(0, 20, 0, 145)
     msg.BackgroundTransparency = 1
-    msg.Text = "⚠️ Jogo não suportado!\n\nID: " .. gameId
+    msg.Text = "⚠️ Game not supported!\n\nID: " .. gameId
     msg.TextColor3 = Color3.fromRGB(200, 200, 210)
     msg.TextSize = 14
     msg.Font = Enum.Font.Gotham
@@ -323,7 +322,7 @@ local function showUnsupported(gameId)
     closeBtn.Size = UDim2.new(0, 120, 0, 35)
     closeBtn.Position = UDim2.new(0.5, -60, 0, 200)
     closeBtn.BackgroundColor3 = HUB_COLOR
-    closeBtn.Text = "FECHAR"
+    closeBtn.Text = "CLOSE"
     closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     closeBtn.TextSize = 13
     closeBtn.Font = Enum.Font.GothamBold
@@ -335,7 +334,7 @@ local function showUnsupported(gameId)
     end)
 end
 
--- ==================== CARREGAR SCRIPT ====================
+-- ==================== LOAD SCRIPT ====================
 local function loadScript(url, gameName)
     local loadingScreen = showLoading(gameName)
     
@@ -345,7 +344,7 @@ local function loadScript(url, gameName)
     
     if not success then
         loadingScreen:Destroy()
-        notify("Erro", "Falha ao baixar script!", 3)
+        notify("Error", "Failed to download script!", 3)
         return false
     end
     
@@ -357,25 +356,25 @@ local function loadScript(url, gameName)
     end)
     
     if not loadSuccess then
-        notify("Erro", "Falha ao executar!", 3)
+        notify("Error", "Failed to execute script!", 3)
         return false
     end
     
     return true
 end
 
--- ==================== EXECUÇÃO ====================
+-- ==================== MAIN ====================
 showIntro()
 
 local gameId = game.PlaceId
 local gameConfig = games[gameId]
 
 if gameConfig then
-    notify(HUB_NAME, "Carregando " .. gameConfig.name .. "...", 2)
+    notify(HUB_NAME, "Loading " .. gameConfig.name .. "...", 2)
     loadScript(gameConfig.script, gameConfig.name)
 else
     showUnsupported(gameId)
-    warn("[Fpliz Hub] Jogo não suportado: " .. gameId)
+    warn("[Fpliz Hub] Game not supported: " .. gameId)
 end
 
 -- Anti-AFK
