@@ -1,6 +1,6 @@
 # Fpliz Hub 🎮
 
-!<img width="1287" height="694" alt="image" src="https://github.com/user-attachments/assets/03fcc457-e8f1-4771-92b0-053515e11c94" />
+<img width="1287" height="694" alt="image" src="https://github.com/user-attachments/assets/03fcc457-e8f1-4771-92b0-053515e11c94" />
 
 ![Jogos](https://img.shields.io/badge/Jogos-4-brightgreen)
 ![Key](https://img.shields.io/badge/Key-FPLIZ-red)
