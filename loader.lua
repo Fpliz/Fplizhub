@@ -1,148 +1,239 @@
 --[[
-  Fpliz Hub - Universal Loader v4.3
-  Visual Melhorado
+  Fpliz Hub - Universal Loader v5.0 FINAL
+  Robust, Professional, Modular
 ]]
 
 -- ==================== SERVICES ====================
-local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local TweenService = game:GetService("TweenService")
 
-local player = Players.LocalPlayer
+local player = game:GetService("Players").LocalPlayer
 
 -- ==================== CONFIGURATION ====================
 local HUB_NAME = "Fpliz Hub"
-local HUB_VERSION = "v4.3"
+local HUB_VERSION = "v5.0"
 local HUB_LOGO = "rbxassetid://82795327169782"
 local HUB_COLOR = Color3.fromRGB(113, 93, 133)
+
+-- Config global
+local Config = {
+    AntiAFK = {
+        Enabled = true,
+        Interval = 180
+    },
+    Loading = {
+        FadeIn = 0.4,
+        FadeOut = 0.3
+    }
+}
 
 -- ==================== GAMES LIST ====================
 local games = {
     [142823291] = {
         name = "Murder Mystery 2",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/mm2.lua",
-        icon = "🔪"
+        icon = "🔪",
+        version = "1.2",
+        status = "working",
+        updated = "26/08/2026"
     },
     [116924926476457] = {
         name = "Murder Mystery V",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/mm2.lua",
-        icon = "🔪"
+        icon = "🔪",
+        version = "1.2",
+        status = "working",
+        updated = "26/08/2026"
     },
     [3956818381] = {
         name = "Ninja Legends",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/ninja_legends.lua",
-        icon = "🥷"
+        icon = "🥷",
+        version = "1.0",
+        status = "working",
+        updated = "25/08/2026"
     },
     [286090429] = {
         name = "Arsenal",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/arsenal.lua",
-        icon = "🎯"
+        icon = "🎯",
+        version = "1.1",
+        status = "working",
+        updated = "26/08/2026"
     },
     [8737899170] = {
         name = "Pet Simulator 99",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/pet_simulator.lua",
-        icon = "🐾"
+        icon = "🐾",
+        version = "1.0",
+        status = "working",
+        updated = "25/08/2026"
     },
     [6516141723] = {
         name = "Doors",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/doors.lua",
-        icon = "🚪"
+        icon = "🚪",
+        version = "1.0",
+        status = "working",
+        updated = "26/08/2026"
     },
 }
 
--- ==================== LOADING SCREEN (MELHORADO) ====================
-local function showLoading(gameName, gameIcon)
+-- ==================== UI HELPERS ====================
+local UI = {}
+
+function UI:CreateScreen(name)
     local screen = Instance.new("ScreenGui")
-    screen.Name = "FplizLoading"
+    screen.Name = name
     screen.ResetOnSpawn = false
     screen.IgnoreGuiInset = true
     screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screen.Parent = CoreGui
-    
-    -- Fundo com fade
+    return screen
+end
+
+function UI:CreateBackground(screen, transparency)
     local bg = Instance.new("Frame")
     bg.Size = UDim2.new(1, 0, 1, 0)
     bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    bg.BackgroundTransparency = 1
+    bg.BackgroundTransparency = transparency or 1
     bg.BorderSizePixel = 0
     bg.Parent = screen
-    
-    -- Frame principal
+    return bg
+end
+
+function UI:CreateCard(parent, size, position)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 380, 0, 220)
-    frame.Position = UDim2.new(0.5, -190, 0.4, -110)
-    frame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+    frame.Size = size
+    frame.Position = position
+    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
     frame.BorderSizePixel = 0
     frame.BackgroundTransparency = 1
-    frame.Parent = screen
+    frame.Parent = parent
     Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 20)
-    
-    -- Gradiente
-    local gradient = Instance.new("UIGradient", frame)
-    gradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 35)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(45, 35, 55))
-    })
-    gradient.Rotation = 45
     
     local stroke = Instance.new("UIStroke", frame)
     stroke.Color = HUB_COLOR
     stroke.Thickness = 3
     stroke.Transparency = 0.3
     
-    -- Logo com fade
+    return frame
+end
+
+function UI:CreateLabel(parent, text, size, color, font, position)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 0, size)
+    label.Position = position or UDim2.new(0, 0, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = color or Color3.fromRGB(255, 255, 255)
+    label.TextSize = size == 30 and 22 or size == 25 and 14 or 12
+    label.Font = font or Enum.Font.Gotham
+    label.TextTransparency = 1
+    label.BorderSizePixel = 0
+    label.Parent = parent
+    return label
+end
+
+function UI:CreateButton(parent, text, position, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 120, 0, 40)
+    btn.Position = position
+    btn.BackgroundColor3 = HUB_COLOR
+    btn.Text = text
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 13
+    btn.Font = Enum.Font.GothamBold
+    btn.BorderSizePixel = 0
+    btn.Parent = parent
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
+    
+    btn.MouseEnter:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(150, 120, 180)}):Play()
+    end)
+    
+    btn.MouseLeave:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = HUB_COLOR}):Play()
+    end)
+    
+    if callback then
+        btn.MouseButton1Click:Connect(callback)
+    end
+    
+    return btn
+end
+
+function UI:FadeIn(object, targetTransparency, targetPosition)
+    local tweenData = {BackgroundTransparency = targetTransparency or 0}
+    if targetPosition then
+        tweenData.Position = targetPosition
+    end
+    TweenService:Create(object, TweenInfo.new(Config.Loading.FadeIn, Enum.EasingStyle.Quad), tweenData):Play()
+end
+
+function UI:FadeOut(object, callback)
+    if object:IsA("Frame") then
+        TweenService:Create(object, TweenInfo.new(Config.Loading.FadeOut), {BackgroundTransparency = 1}):Play()
+    elseif object:IsA("TextLabel") then
+        TweenService:Create(object, TweenInfo.new(Config.Loading.FadeOut), {TextTransparency = 1}):Play()
+    elseif object:IsA("ImageLabel") then
+        TweenService:Create(object, TweenInfo.new(Config.Loading.FadeOut), {ImageTransparency = 1}):Play()
+    end
+    
+    if callback then
+        task.delay(Config.Loading.FadeOut, callback)
+    end
+end
+
+-- ==================== LOADING SCREEN ====================
+local function showLoading(gameName, gameIcon)
+    local screen = UI:CreateScreen("FplizLoading")
+    local bg = UI:CreateBackground(screen, 1)
+    local frame = UI:CreateCard(screen, UDim2.new(0, 380, 0, 240), UDim2.new(0.5, -190, 0.4, -120))
+    
+    local elements = {}
+    
+    -- Logo
     local logo = Instance.new("ImageLabel")
     logo.Size = UDim2.new(0, 60, 0, 60)
-    logo.Position = UDim2.new(0.5, -30, 0, 20)
+    logo.Position = UDim2.new(0.5, -30, 0, 15)
     logo.BackgroundTransparency = 1
     logo.Image = HUB_LOGO
     logo.ImageTransparency = 1
     logo.BorderSizePixel = 0
     logo.Parent = frame
     Instance.new("UICorner", logo).CornerRadius = UDim.new(0, 15)
+    table.insert(elements, logo)
     
     -- Ícone do jogo
     local gameIconLabel = Instance.new("TextLabel")
     gameIconLabel.Size = UDim2.new(0, 30, 0, 30)
-    gameIconLabel.Position = UDim2.new(0.5, 40, 0, 35)
+    gameIconLabel.Position = UDim2.new(0.5, 40, 0, 30)
     gameIconLabel.BackgroundTransparency = 1
     gameIconLabel.Text = gameIcon or "🎮"
     gameIconLabel.TextSize = 20
     gameIconLabel.Parent = frame
+    table.insert(elements, gameIconLabel)
     
     -- Título
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 30)
-    title.Position = UDim2.new(0, 0, 0, 90)
-    title.BackgroundTransparency = 1
-    title.Text = HUB_NAME .. " " .. HUB_VERSION
-    title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    title.TextSize = 22
-    title.Font = Enum.Font.GothamBlack
-    title.TextTransparency = 1
-    title.Parent = frame
+    local title = UI:CreateLabel(frame, HUB_NAME .. " " .. HUB_VERSION, 30, Color3.fromRGB(255, 255, 255), Enum.Font.GothamBlack, UDim2.new(0, 0, 0, 85))
+    table.insert(elements, title)
     
     -- Status
-    local status = Instance.new("TextLabel")
-    status.Size = UDim2.new(1, 0, 0, 25)
-    status.Position = UDim2.new(0, 0, 0, 125)
-    status.BackgroundTransparency = 1
-    status.Text = "Loading " .. gameName .. "..."
-    status.TextColor3 = HUB_COLOR
-    status.TextSize = 14
-    status.Font = Enum.Font.Gotham
-    status.TextTransparency = 1
-    status.Parent = frame
+    local status = UI:CreateLabel(frame, "Initializing...", 25, HUB_COLOR, Enum.Font.Gotham, UDim2.new(0, 0, 0, 120))
+    table.insert(elements, status)
     
     -- Barra de progresso
     local progressBg = Instance.new("Frame")
     progressBg.Size = UDim2.new(1, -80, 0, 12)
-    progressBg.Position = UDim2.new(0, 40, 0, 165)
+    progressBg.Position = UDim2.new(0, 40, 0, 160)
     progressBg.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
     progressBg.BorderSizePixel = 0
+    progressBg.BackgroundTransparency = 1
     progressBg.Parent = frame
     Instance.new("UICorner", progressBg).CornerRadius = UDim.new(0, 6)
+    table.insert(elements, progressBg)
     
     local progressFill = Instance.new("Frame")
     progressFill.Size = UDim2.new(0, 0, 1, 0)
@@ -151,186 +242,210 @@ local function showLoading(gameName, gameIcon)
     progressFill.Parent = progressBg
     Instance.new("UICorner", progressFill).CornerRadius = UDim.new(0, 6)
     
-    -- Gradiente na barra
-    local barGradient = Instance.new("UIGradient", progressFill)
-    barGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, HUB_COLOR),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 140, 220))
-    })
-    
     -- Porcentagem
-    local percentLabel = Instance.new("TextLabel")
-    percentLabel.Size = UDim2.new(1, 0, 0, 20)
-    percentLabel.Position = UDim2.new(0, 0, 0, 185)
-    percentLabel.BackgroundTransparency = 1
-    percentLabel.Text = "0%"
-    percentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    percentLabel.TextSize = 12
-    percentLabel.Font = Enum.Font.GothamBold
-    percentLabel.TextTransparency = 1
-    percentLabel.Parent = frame
+    local percentLabel = UI:CreateLabel(frame, "0%", 20, Color3.fromRGB(255, 255, 255), Enum.Font.GothamBold, UDim2.new(0, 0, 0, 180))
+    table.insert(elements, percentLabel)
     
     -- FADE IN
-    TweenService:Create(bg, TweenInfo.new(0.5), {BackgroundTransparency = 0.5}):Play()
-    TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {
-        Position = UDim2.new(0.5, -190, 0.5, -110),
-        BackgroundTransparency = 0
-    }):Play()
-    TweenService:Create(logo, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
-    TweenService:Create(title, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
-    TweenService:Create(status, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
-    TweenService:Create(percentLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+    UI:FadeIn(bg, 0.5)
+    UI:FadeIn(frame, 0, UDim2.new(0.5, -190, 0.5, -120))
     
-    -- Animação da barra
-    task.spawn(function()
-        for i = 0, 100 do
-            progressFill.Size = UDim2.new(i / 100, 0, 1, 0)
-            percentLabel.Text = i .. "%"
-            task.wait(0.015)
-        end
-    end)
-    
-    return screen
-end
-
--- ==================== FADE OUT LOADING ====================
-local function fadeOutLoading(screen)
-    local frame = screen:FindFirstChildOfClass("Frame")
-    if frame then
-        TweenService:Create(frame, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+    for _, element in ipairs(elements) do
+        UI:FadeIn(element)
     end
-    task.wait(0.3)
-    screen:Destroy()
+    
+    TweenService:Create(title, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
+    TweenService:Create(status, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
+    TweenService:Create(percentLabel, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
+    
+    -- Retorna funções de controle
+    return {
+        Screen = screen,
+        Frame = frame,
+        Background = bg,
+        Elements = elements,
+        SetStatus = function(text)
+            status.Text = text
+        end,
+        SetProgress = function(percent)
+            percent = math.clamp(percent, 0, 100)
+            progressFill.Size = UDim2.new(percent / 100, 0, 1, 0)
+            percentLabel.Text = percent .. "%"
+        end,
+        Destroy = function()
+            UI:FadeOut(bg)
+            UI:FadeOut(frame, function()
+                screen:Destroy()
+            end)
+            for _, element in ipairs(elements) do
+                UI:FadeOut(element)
+            end
+        end
+    }
 end
 
--- ==================== UNSUPPORTED GAME (MELHORADO) ====================
-local function showUnsupported(gameId)
-    local screen = Instance.new("ScreenGui")
-    screen.Name = "FplizUnsupported"
-    screen.ResetOnSpawn = false
-    screen.IgnoreGuiInset = true
-    screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    screen.Parent = CoreGui
+-- ==================== ERROR SCREEN ====================
+local function showError(errorType, gameId, retryCallback, errorDetails)
+    local screen = UI:CreateScreen("FplizError")
+    local bg = UI:CreateBackground(screen, 1)
+    local frame = UI:CreateCard(screen, UDim2.new(0, 380, 0, 250), UDim2.new(0.5, -190, 0.4, -125))
     
-    local bg = Instance.new("Frame")
-    bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    bg.BackgroundTransparency = 1
-    bg.BorderSizePixel = 0
-    bg.Parent = screen
+    local elements = {}
     
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 380, 0, 230)
-    frame.Position = UDim2.new(0.5, -190, 0.4, -115)
-    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-    frame.BorderSizePixel = 0
-    frame.BackgroundTransparency = 1
-    frame.Parent = screen
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 20)
-    
-    local gradient = Instance.new("UIGradient", frame)
-    gradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 40)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 40, 60))
-    })
-    gradient.Rotation = 45
-    
-    local stroke = Instance.new("UIStroke", frame)
-    stroke.Color = HUB_COLOR
-    stroke.Thickness = 3
-    
+    -- Logo
     local logo = Instance.new("ImageLabel")
     logo.Size = UDim2.new(0, 70, 0, 70)
     logo.Position = UDim2.new(0.5, -35, 0, 20)
     logo.BackgroundTransparency = 1
     logo.Image = HUB_LOGO
+    logo.ImageTransparency = 1
     logo.BorderSizePixel = 0
     logo.Parent = frame
     Instance.new("UICorner", logo).CornerRadius = UDim.new(0, 15)
+    table.insert(elements, logo)
     
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 30)
-    title.Position = UDim2.new(0, 0, 0, 100)
-    title.BackgroundTransparency = 1
-    title.Text = HUB_NAME
-    title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    title.TextSize = 24
-    title.Font = Enum.Font.GothamBlack
-    title.Parent = frame
+    -- Título baseado no tipo de erro
+    local errorTitle = "Unknown Error"
+    local errorMessage = "Something went wrong."
+    
+    if errorType == "unsupported" then
+        errorTitle = "Game Not Supported"
+        errorMessage = "This game is not supported yet.\n\nID: " .. gameId
+    elseif errorType == "download" then
+        errorTitle = "Download Failed"
+        errorMessage = "Could not download the script.\nCheck your internet connection."
+    elseif errorType == "execute" then
+        errorTitle = "Script Error"
+        errorMessage = "The script failed to execute."
+        if errorDetails then
+            errorMessage = errorMessage .. "\n\nError: " .. tostring(errorDetails)
+        end
+    end
+    
+    local title = UI:CreateLabel(frame, errorTitle, 30, Color3.fromRGB(255, 100, 100), Enum.Font.GothamBlack, UDim2.new(0, 0, 0, 100))
+    table.insert(elements, title)
     
     local msg = Instance.new("TextLabel")
     msg.Size = UDim2.new(1, -40, 0, 50)
-    msg.Position = UDim2.new(0, 20, 0, 140)
+    msg.Position = UDim2.new(0, 20, 0, 135)
     msg.BackgroundTransparency = 1
-    msg.Text = "⚠️ Game not supported!\n\nID: " .. gameId
+    msg.Text = errorMessage
     msg.TextColor3 = Color3.fromRGB(200, 200, 210)
     msg.TextSize = 14
     msg.Font = Enum.Font.Gotham
     msg.TextWrapped = true
+    msg.TextTransparency = 1
     msg.Parent = frame
+    table.insert(elements, msg)
     
-    local closeBtn = Instance.new("TextButton")
-    closeBtn.Size = UDim2.new(0, 120, 0, 40)
-    closeBtn.Position = UDim2.new(0.5, -60, 0, 180)
-    closeBtn.BackgroundColor3 = HUB_COLOR
-    closeBtn.Text = "CLOSE"
-    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    closeBtn.TextSize = 13
-    closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.BorderSizePixel = 0
-    closeBtn.Parent = frame
-    Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 10)
+    -- Botões
+    if retryCallback then
+        local retryBtn = UI:CreateButton(frame, "RETRY", UDim2.new(0, 30, 0, 195), function()
+            screen:Destroy()
+            retryCallback()
+        end)
+        table.insert(elements, retryBtn)
+    end
     
-    closeBtn.MouseEnter:Connect(function()
-        TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(150, 120, 180)}):Play()
+    local closeBtn = UI:CreateButton(frame, "CLOSE", UDim2.new(1, -150, 0, 195), function()
+        UI:FadeOut(bg)
+        UI:FadeOut(frame, function()
+            screen:Destroy()
+        end)
+        for _, element in ipairs(elements) do
+            UI:FadeOut(element)
+        end
     end)
-    
-    closeBtn.MouseLeave:Connect(function()
-        TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundColor3 = HUB_COLOR}):Play()
-    end)
-    
-    closeBtn.MouseButton1Click:Connect(function()
-        TweenService:Create(bg, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
-        TweenService:Create(frame, TweenInfo.new(0.3), {BackgroundTransparency = 1, Position = UDim2.new(0.5, -190, 0.6, -115)}):Play()
-        task.wait(0.3)
-        screen:Destroy()
-    end)
+    table.insert(elements, closeBtn)
     
     -- FADE IN
-    TweenService:Create(bg, TweenInfo.new(0.5), {BackgroundTransparency = 0.6}):Play()
-    TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {
-        Position = UDim2.new(0.5, -190, 0.5, -115),
-        BackgroundTransparency = 0
-    }):Play()
+    UI:FadeIn(bg, 0.6)
+    UI:FadeIn(frame, 0, UDim2.new(0.5, -190, 0.5, -125))
+    
+    for _, element in ipairs(elements) do
+        UI:FadeIn(element)
+    end
+    
+    TweenService:Create(title, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
+    TweenService:Create(msg, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
+    
+    return screen
 end
 
 -- ==================== LOAD SCRIPT ====================
-local function loadScript(url, gameName, gameIcon)
-    local loadingScreen = showLoading(gameName, gameIcon)
+local function loadScript(gameConfig)
+    local loading = showLoading(gameConfig.name, gameConfig.icon)
     
-    local success, result = pcall(function()
-        return game:HttpGet(url)
-    end)
-    
-    if not success then
-        fadeOutLoading(loadingScreen)
-        showUnsupported(game.PlaceId)
-        return false
+    local function attemptLoad()
+        -- Fase 1: Inicializando
+        loading.SetStatus("Initializing...")
+        loading.SetProgress(10)
+        task.wait(0.3)
+        
+        loading.SetStatus("Connecting...")
+        loading.SetProgress(20)
+        task.wait(0.2)
+        
+        -- Fase 2: Baixando
+        loading.SetStatus("Downloading " .. gameConfig.name .. "...")
+        loading.SetProgress(30)
+        
+        local success, result = pcall(function()
+            return game:HttpGet(gameConfig.script)
+        end)
+        
+        if not success then
+            loading.SetStatus("Download failed")
+            loading.SetProgress(60)
+            task.wait(0.5)
+            loading.Destroy()
+            showError("download", game.PlaceId, function()
+                loadScript(gameConfig)
+            end)
+            return false
+        end
+        
+        loading.SetProgress(50)
+        task.wait(0.2)
+        
+        -- Fase 3: Executando
+        loading.SetStatus("Loading module...")
+        loading.SetProgress(60)
+        
+        local loadSuccess, loadResult = pcall(function()
+            loadstring(result)()
+        end)
+        
+        if loadSuccess then
+            -- SUCESSO
+            loading.SetStatus("Initializing UI...")
+            loading.SetProgress(80)
+            task.wait(0.3)
+            
+            loading.SetStatus("Ready!")
+            loading.SetProgress(95)
+            task.wait(0.2)
+            
+            loading.SetStatus("Done!")
+            loading.SetProgress(100)
+            task.wait(0.3)
+            
+            loading.Destroy()
+            return true
+        else
+            -- ERRO (usa loadResult para detalhes)
+            loading.SetStatus("Execution failed")
+            loading.SetProgress(60)
+            task.wait(0.5)
+            loading.Destroy()
+            showError("execute", game.PlaceId, function()
+                loadScript(gameConfig)
+            end, loadResult)
+            return false
+        end
     end
     
-    task.wait(0.5)
-    fadeOutLoading(loadingScreen)
-    
-    local loadSuccess, loadResult = pcall(function()
-        loadstring(result)()
-    end)
-    
-    if not loadSuccess then
-        warn("[Fpliz Hub] Error: " .. tostring(loadResult))
-        return false
-    end
-    
-    return true
+    return attemptLoad()
 end
 
 -- ==================== MAIN ====================
@@ -338,20 +453,22 @@ local gameId = game.PlaceId
 local gameConfig = games[gameId]
 
 if gameConfig then
-    loadScript(gameConfig.script, gameConfig.name, gameConfig.icon)
+    loadScript(gameConfig)
 else
-    showUnsupported(gameId)
+    showError("unsupported", gameId, nil)
     warn("[Fpliz Hub] Game not supported: " .. gameId)
 end
 
 -- ==================== ANTI-AFK ====================
-task.spawn(function()
-    while true do
-        task.wait(180)
-        pcall(function()
-            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.RightShift, false, game)
-            task.wait(0.1)
-            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.RightShift, false, game)
-        end)
-    end
-end)
+if Config.AntiAFK.Enabled then
+    task.spawn(function()
+        while true do
+            task.wait(Config.AntiAFK.Interval)
+            pcall(function()
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.RightShift, false, game)
+                task.wait(0.1)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.RightShift, false, game)
+            end)
+        end
+    end)
+end
