@@ -1,7 +1,17 @@
 --[[
-  Fpliz Hub - Universal Loader v5.0
-  SIMPLE AND CLEAN
-]]
+
+███████╗██████╗ ██╗     ██╗███████╗    ██╗  ██╗██╗   ██╗██████╗ 
+██╔════╝██╔══██╗██║     ██║╚══███╔╝    ██║  ██║██║   ██║██╔══██╗
+█████╗  ██████╔╝██║     ██║  ███╔╝     ███████║██║   ██║██████╔╝
+██╔══╝  ██╔═══╝ ██║     ██║ ███╔╝      ██╔══██║██║   ██║██╔══██╗
+██║     ██║     ███████╗██║███████╗    ██║  ██║╚██████╔╝██████╔╝
+╚═╝     ╚═╝     ╚══════╝╚═╝╚══════╝    ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
+
+            ⚠️  THIS SCRIPT IS THE EXCLUSIVE PROPERTY OF FPLIZ HUB  ⚠️
+            ⚠️  DO NOT STEAL, COPY, MODIFY OR RESELL               ⚠️
+            ⚠️  ALL RIGHTS RESERVED © 2026 FPLIZ HUB              ⚠️
+
+--]]
 
 -- ==================== SERVICES ====================
 local CoreGui = game:GetService("CoreGui")
@@ -23,6 +33,10 @@ local games = {
     [116924926476457] = {
         name = "Murder Mystery V",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/mm2.lua"
+    },
+    [107778070777162] = {
+        name = "Steal An Egg",
+        script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/steal_an_egg.lua"
     },
     [3956818381] = {
         name = "Ninja Legends",
@@ -47,6 +61,7 @@ local function showLoading(gameName)
     local screen = Instance.new("ScreenGui")
     screen.Name = "FplizLoading"
     screen.ResetOnSpawn = false
+    screen.IgnoreGuiInset = true
     screen.Parent = CoreGui
     
     local bg = Instance.new("Frame")
@@ -62,6 +77,11 @@ local function showLoading(gameName)
     frame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
     frame.BorderSizePixel = 0
     frame.Parent = screen
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+    
+    local stroke = Instance.new("UIStroke", frame)
+    stroke.Color = HUB_COLOR
+    stroke.Thickness = 2
     
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 30)
@@ -110,7 +130,7 @@ local function showLoading(gameName)
         for i = 0, 100 do
             progressFill.Size = UDim2.new(i / 100, 0, 1, 0)
             percentLabel.Text = i .. "%"
-            task.wait(0.01)
+            task.wait(0.008)
         end
     end)
     
@@ -122,6 +142,7 @@ local function showUnsupported(gameId)
     local screen = Instance.new("ScreenGui")
     screen.Name = "FplizUnsupported"
     screen.ResetOnSpawn = false
+    screen.IgnoreGuiInset = true
     screen.Parent = CoreGui
     
     local bg = Instance.new("Frame")
@@ -132,11 +153,16 @@ local function showUnsupported(gameId)
     bg.Parent = screen
     
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 300, 0, 150)
-    frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+    frame.Size = UDim2.new(0, 320, 0, 160)
+    frame.Position = UDim2.new(0.5, -160, 0.5, -80)
     frame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
     frame.BorderSizePixel = 0
     frame.Parent = screen
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+    
+    local stroke = Instance.new("UIStroke", frame)
+    stroke.Color = HUB_COLOR
+    stroke.Thickness = 2
     
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 30)
@@ -161,7 +187,7 @@ local function showUnsupported(gameId)
     
     local closeBtn = Instance.new("TextButton")
     closeBtn.Size = UDim2.new(0, 100, 0, 30)
-    closeBtn.Position = UDim2.new(0.5, -50, 0, 110)
+    closeBtn.Position = UDim2.new(0.5, -50, 0, 115)
     closeBtn.BackgroundColor3 = HUB_COLOR
     closeBtn.Text = "CLOSE"
     closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -169,6 +195,7 @@ local function showUnsupported(gameId)
     closeBtn.Font = Enum.Font.GothamBold
     closeBtn.BorderSizePixel = 0
     closeBtn.Parent = frame
+    Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
     
     closeBtn.MouseButton1Click:Connect(function()
         screen:Destroy()
@@ -189,7 +216,7 @@ local function loadScript(url, gameName)
         return false
     end
     
-    task.wait(0.5)
+    task.wait(0.3)
     loadingScreen:Destroy()
     
     local loadSuccess, loadResult = pcall(function()
