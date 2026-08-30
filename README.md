@@ -2,7 +2,7 @@
 
 ![GitHub](https://img.shields.io/badge/GitHub-Fpliz-purple?logo=github)
 ![Linguagem](https://img.shields.io/badge/Linguagem-Lua%2FLuau-blue?logo=lua)
-![Versão](https://img.shields.io/badge/Versão-v2.2-brightgreen)
+![Versão](https://img.shields.io/badge/Versão-v6.0-brightgreen)
 ![Jogos](https://img.shields.io/badge/Jogos-10-gray)
 ![Status](https://img.shields.io/badge/Status-Online-green)
 
