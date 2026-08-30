@@ -1,13 +1,13 @@
--- Detecta o Sea e carrega a parte certa
+-- ==================== DETECTA SEA AUTOMATICAMENTE ====================
 local placeId = game.PlaceId
 
 if placeId == 2753915549 then
-    -- Sea 1
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/blox_fruits_part1.lua"))()
+    First_Sea = true
+    print("[Fpliz Hub] Sea 1 detectado!")
 elseif placeId == 4442272183 then
-    -- Sea 2
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/blox_fruits_part2.lua"))()
+    Second_Sea = true
+    print("[Fpliz Hub] Sea 2 detectado!")
 elseif placeId == 7449423635 then
-    -- Sea 3
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/blox_fruits_part3.lua"))()
+    Third_Sea = true
+    print("[Fpliz Hub] Sea 3 detectado!")
 end
