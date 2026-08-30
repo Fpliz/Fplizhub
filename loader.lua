@@ -13,6 +13,21 @@
 
 --]]
 
+--[[
+
+███████╗██████╗ ██╗     ██╗███████╗    ██╗  ██╗██╗   ██╗██████╗ 
+██╔════╝██╔══██╗██║     ██║╚══███╔╝    ██║  ██║██║   ██║██╔══██╗
+█████╗  ██████╔╝██║     ██║  ███╔╝     ███████║██║   ██║██████╔╝
+██╔══╝  ██╔═══╝ ██║     ██║ ███╔╝      ██╔══██║██║   ██║██╔══██╗
+██║     ██║     ███████╗██║███████╗    ██║  ██║╚██████╔╝██████╔╝
+╚═╝     ╚═╝     ╚══════╝╚═╝╚══════╝    ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
+
+            ⚠️  THIS SCRIPT IS THE EXCLUSIVE PROPERTY OF FPLIZ HUB  ⚠️
+            ⚠️  DO NOT STEAL, COPY, MODIFY OR RESELL               ⚠️
+            ⚠️  ALL RIGHTS RESERVED © 2026 FPLIZ HUB              ⚠️
+
+--]]
+
 -- ==================== SERVICES ====================
 local CoreGui = game:GetService("CoreGui")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -21,8 +36,9 @@ local player = game:GetService("Players").LocalPlayer
 
 -- ==================== CONFIG ====================
 local HUB_NAME = "Fpliz Hub"
-local HUB_VERSION = "v5.0"
+local HUB_VERSION = "v6.0"
 local HUB_COLOR = Color3.fromRGB(113, 93, 133)
+local HUB_LOGO = "rbxassetid://82795327169782"
 
 -- ==================== GAMES ====================
 local games = {
@@ -34,9 +50,17 @@ local games = {
         name = "Murder Mystery V",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/mm2.lua"
     },
-    [107778070777162] = {
-        name = "Steal An Egg",
-        script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/steal_an_egg.lua"
+    [2753915549] = {
+        name = "Blox Fruits [Sea 1]",
+        script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/blox_fruits.lua"
+    },
+    [4442272183] = {
+        name = "Blox Fruits [Sea 2]",
+        script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/blox_fruits.lua"
+    },
+    [7449423635] = {
+        name = "Blox Fruits [Sea 3]",
+        script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/blox_fruits.lua"
     },
     [3956818381] = {
         name = "Ninja Legends",
@@ -53,6 +77,10 @@ local games = {
     [6516141723] = {
         name = "Doors",
         script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/doors.lua"
+    },
+    [4924922222] = {
+        name = "Brookhaven",
+        script = "https://raw.githubusercontent.com/Fpliz/Fplizhub/main/games/brookhaven.lua"
     },
 }
 
@@ -72,20 +100,29 @@ local function showLoading(gameName)
     bg.Parent = screen
     
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 300, 0, 120)
-    frame.Position = UDim2.new(0.5, -150, 0.5, -60)
+    frame.Size = UDim2.new(0, 350, 0, 180)
+    frame.Position = UDim2.new(0.5, -175, 0.5, -90)
     frame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
     frame.BorderSizePixel = 0
     frame.Parent = screen
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 15)
     
     local stroke = Instance.new("UIStroke", frame)
     stroke.Color = HUB_COLOR
     stroke.Thickness = 2
     
+    local logo = Instance.new("ImageLabel")
+    logo.Size = UDim2.new(0, 50, 0, 50)
+    logo.Position = UDim2.new(0.5, -25, 0, 15)
+    logo.BackgroundTransparency = 1
+    logo.Image = HUB_LOGO
+    logo.BorderSizePixel = 0
+    logo.Parent = frame
+    Instance.new("UICorner", logo).CornerRadius = UDim.new(0, 10)
+    
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 30)
-    title.Position = UDim2.new(0, 0, 0, 10)
+    title.Size = UDim2.new(1, 0, 0, 25)
+    title.Position = UDim2.new(0, 0, 0, 70)
     title.BackgroundTransparency = 1
     title.Text = HUB_NAME .. " " .. HUB_VERSION
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -95,7 +132,7 @@ local function showLoading(gameName)
     
     local status = Instance.new("TextLabel")
     status.Size = UDim2.new(1, 0, 0, 25)
-    status.Position = UDim2.new(0, 0, 0, 45)
+    status.Position = UDim2.new(0, 0, 0, 100)
     status.BackgroundTransparency = 1
     status.Text = "Loading " .. gameName .. "..."
     status.TextColor3 = HUB_COLOR
@@ -104,21 +141,23 @@ local function showLoading(gameName)
     status.Parent = frame
     
     local progressBg = Instance.new("Frame")
-    progressBg.Size = UDim2.new(1, -40, 0, 8)
-    progressBg.Position = UDim2.new(0, 20, 0, 80)
+    progressBg.Size = UDim2.new(1, -40, 0, 10)
+    progressBg.Position = UDim2.new(0, 20, 0, 135)
     progressBg.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
     progressBg.BorderSizePixel = 0
     progressBg.Parent = frame
+    Instance.new("UICorner", progressBg).CornerRadius = UDim.new(0, 5)
     
     local progressFill = Instance.new("Frame")
     progressFill.Size = UDim2.new(0, 0, 1, 0)
     progressFill.BackgroundColor3 = HUB_COLOR
     progressFill.BorderSizePixel = 0
     progressFill.Parent = progressBg
+    Instance.new("UICorner", progressFill).CornerRadius = UDim.new(0, 5)
     
     local percentLabel = Instance.new("TextLabel")
     percentLabel.Size = UDim2.new(1, 0, 0, 20)
-    percentLabel.Position = UDim2.new(0, 0, 0, 92)
+    percentLabel.Position = UDim2.new(0, 0, 0, 150)
     percentLabel.BackgroundTransparency = 1
     percentLabel.Text = "0%"
     percentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -153,8 +192,8 @@ local function showUnsupported(gameId)
     bg.Parent = screen
     
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 320, 0, 160)
-    frame.Position = UDim2.new(0.5, -160, 0.5, -80)
+    frame.Size = UDim2.new(0, 320, 0, 170)
+    frame.Position = UDim2.new(0.5, -160, 0.5, -85)
     frame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
     frame.BorderSizePixel = 0
     frame.Parent = screen
@@ -187,7 +226,7 @@ local function showUnsupported(gameId)
     
     local closeBtn = Instance.new("TextButton")
     closeBtn.Size = UDim2.new(0, 100, 0, 30)
-    closeBtn.Position = UDim2.new(0.5, -50, 0, 115)
+    closeBtn.Position = UDim2.new(0.5, -50, 0, 120)
     closeBtn.BackgroundColor3 = HUB_COLOR
     closeBtn.Text = "CLOSE"
     closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
